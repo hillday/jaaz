@@ -7,17 +7,17 @@ from tools.utils.image_generation_core import generate_image_with_provider
 
 class EditImageByDoubaoSeedream3InputSchema(BaseModel):
     prompt: str = Field(
-        description="Required. The prompt for image edit. Please describe what you want to edit in the prompt."
+        description="必填项。图像编辑的提示词。请在提示词中描述你想要编辑的内容。"
     )
     image: list[str] = Field(
-        description="Required. The image for image generation. Pass a list of image_id here (Only 1 image supported. If you want to generate multiple images. Call another), e.g. ['im_hfuiut78.png']. Best for image editing cases like: Editing specific parts of the image, Removing specific objects, Maintaining visual elements across scenes (character/object consistency), Generating new content in the style of the reference (style transfer), etc."
+        description="必填项。用于图像生成的图片。在此处传入图片ID列表（仅支持1张图片。如果你想要生成多张图片，请调用其他工具），例如['im_hfuiut78.png']。适用于以下图像编辑场景：编辑图像的特定部分、移除特定对象、保持场景中的视觉元素（角色/对象一致性）、参考图片风格生成新内容（风格迁移）等。"
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
 @tool(
     "edit_image_by_doubao_seededit_3_volces",
-    description="Edit an image by Doubao Seedream 3 model using text prompt and an image. Use this model for high-quality image modification with Doubao's advanced AI.",
+    description="使用文本提示词和图片，通过豆包Seedream 3模型编辑图像。使用该模型通过豆包的高级AI进行高质量的图像修改。",
     args_schema=EditImageByDoubaoSeedream3InputSchema,
 )
 async def edit_image_by_doubao_seededit_3_volces(
@@ -27,7 +27,7 @@ async def edit_image_by_doubao_seededit_3_volces(
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> str:
     """
-    Generate an image using Doubao Seedream 3 model via the provider framework
+    通过提供者框架使用豆包Seedream 3模型编辑图像
     """
     ctx = config.get("configurable", {})
     canvas_id = ctx.get("canvas_id", "")

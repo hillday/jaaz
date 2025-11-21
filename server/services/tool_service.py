@@ -35,6 +35,9 @@ from tools.generate_image_by_doubao_seedream_3_volces import (
 from tools.generate_image_by_doubao_seededit_3_volces import (
     edit_image_by_doubao_seededit_3_volces,
 )
+from tools.generate_image_by_doubao_seedream_4_volces import (
+    generate_image_by_doubao_seedream_4_volces,
+)
 from tools.generate_video_by_seedance_v1_jaaz import generate_video_by_seedance_v1_jaaz
 from tools.generate_video_by_seedance_v1_pro_volces import (
     generate_video_by_seedance_v1_pro_volces,
@@ -114,6 +117,12 @@ TOOL_MAPPING: Dict[str, ToolInfo] = {
         "type": "image",
         "provider": "volces",
         "tool_function": generate_image_by_doubao_seedream_3_volces,
+    },
+    "generate_image_by_doubao_seedream_4_volces": {
+        "display_name": "Doubao Seedream 4.0 by volces",
+        "type": "image",
+        "provider": "volces",
+        "tool_function": generate_image_by_doubao_seedream_4_volces,
     },
     "edit_image_by_doubao_seededit_3_volces": {
         "display_name": "Doubao Seededit 3 by volces",

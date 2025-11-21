@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Trash2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 
@@ -25,6 +26,7 @@ export default function AddModelsList({
 }: ModelsListProps) {
   const [modelItems, setModelItems] = useState<ModelItem[]>([])
   const [newModelName, setNewModelName] = useState('')
+  const [newModelType, setNewModelType] = useState<'text' | 'image' | 'video'>('text')
   const [openAddModelDialog, setOpenAddModelDialog] = useState(false)
 
   useEffect(() => {
@@ -57,11 +59,12 @@ export default function AddModelsList({
     if (newModelName) {
       const newItems = [
         ...modelItems,
-        { name: newModelName, type: 'text' as const },
+        { name: newModelName, type: newModelType },
       ]
       setModelItems(newItems)
       notifyChange(newItems)
       setNewModelName('')
+      setNewModelType('text')
       setOpenAddModelDialog(false)
     }
   }
@@ -98,6 +101,17 @@ export default function AddModelsList({
                 }}
                 onChange={(e) => setNewModelName(e.target.value)}
               />
+              <Label>Model Type</Label>
+              <Select value={newModelType} onValueChange={(value) => setNewModelType(value as 'text' | 'image' | 'video')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select model type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="text">Text</SelectItem>
+                  <SelectItem value="image">Image</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
               <Button type="button" onClick={handleAddModel} className="w-full">
                 Add Model
               </Button>

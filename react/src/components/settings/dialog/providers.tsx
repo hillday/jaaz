@@ -86,7 +86,9 @@ const SettingProviders = () => {
       )}
 
       {!isLoading &&
-        Object.keys(providers).map((key, index) => (
+        Object.keys(providers)
+          .filter(key => !['openai', 'ollama', 'comfyui'].includes(key))
+          .map((key, index) => (
           <div key={key} className="w-full">
             {key === 'jaaz' ? (
               <JaazSetting

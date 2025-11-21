@@ -129,8 +129,8 @@ class ConfigService:
                 provider_models = DEFAULT_PROVIDERS_CONFIG.get(
                     provider, {}).get('models', {})
                 for model_name, model_config in provider_config.get('models', {}).items():
-                    # Only text model can be self added
-                    if model_config.get('type') == 'text' and model_name not in provider_models:
+                    # Allow all types of custom models
+                    if model_name not in provider_models:
                         provider_models[model_name] = model_config
                         provider_models[model_name]['is_custom'] = True
                 self.app_config[provider]['models'] = provider_models

@@ -8,33 +8,33 @@ from .utils.image_utils import process_input_image
 
 class GenerateVideoBySeedanceV1InputSchema(BaseModel):
     prompt: str = Field(
-        description="Required. The prompt for video generation. Describe what you want to see in the video."
+        description="必填项。视频生成的提示词。描述你想要在视频中看到的内容。"
     )
     resolution: str = Field(
         default="480p",
-        description="Optional. The resolution of the video. Use 480p if not explicitly specified by user. Allowed values: 480p, 1080p."
+        description="可选。视频的分辨率。如果用户没有明确指定，使用480p。允许的值：480p、1080p。"
     )
     duration: int = Field(
         default=5,
-        description="Optional. The duration of the video in seconds. Use 5 by default. Allowed values: 5, 10."
+        description="可选。视频的时长（秒）。默认使用5秒。允许的值：5、10。"
     )
     aspect_ratio: str = Field(
         default="16:9",
-        description="Optional. The aspect ratio of the video. Allowed values: 1:1, 16:9, 4:3, 21:9"
+        description="可选。视频的宽高比。允许的值：1:1、16:9、4:3、21:9"
     )
     input_images: list[str] | None = Field(
         default=None,
-        description="Optional. Images to use as reference or first frame. Pass a list of image_id here, e.g. ['im_jurheut7.png']."
+        description="可选。用作参考或第一帧的图片。在此处传入图片ID列表，例如：['im_jurheut7.png']。"
     )
     camera_fixed: bool = Field(
         default=True,
-        description="Optional. Whether to keep the camera fixed (no camera movement)."
+        description="可选。是否保持相机固定（无相机移动）。"
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
 @tool("generate_video_by_seedance_v1_pro_volces",
-      description="Generate high-quality videos using Seedance V1 model. Supports multiple providers and text-to-video/image-to-video generation.",
+      description="使用Seedance V1模型生成高质量视频。支持多个提供者和文生图/图生视频生成。",
       args_schema=GenerateVideoBySeedanceV1InputSchema)
 async def generate_video_by_seedance_v1_pro_volces(
     prompt: str,
@@ -47,7 +47,7 @@ async def generate_video_by_seedance_v1_pro_volces(
     camera_fixed: bool = True,
 ) -> str:
     """
-    Generate a video using Seedance V1 model via configured provider
+    通过配置的提供者使用Seedance V1模型生成视频
     """
 
     # Process input images if provided (only use the first one)
@@ -58,10 +58,10 @@ async def generate_video_by_seedance_v1_pro_volces(
         processed_image = await process_input_image(first_image)
         if processed_image:
             processed_input_images = [processed_image]
-            print(f"Using input image for video generation: {first_image}")
+            print(f"正在使用输入图片进行视频生成：{first_image}")
         else:
             raise ValueError(
-                f"Failed to process input image: {first_image}. Please check if the image exists and is valid.")
+                f"处理输入图片失败：{first_image}。请检查图片是否存在且有效。")
 
     return await generate_video_with_provider(
         prompt=prompt,

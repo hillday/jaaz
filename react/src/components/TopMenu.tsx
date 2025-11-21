@@ -71,7 +71,6 @@ export default function TopMenu({
         </Button>
         <LanguageSwitcher />
         <ThemeButton />
-        <UserMenu />
       </div>
     </motion.div>
   )

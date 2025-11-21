@@ -121,13 +121,14 @@ class VolcesProvider(ImageProviderBase):
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {str(config.get('api_key', ''))}",
                 }
+                print(f"gen image model: {model}")
 
                 payload = {
                     "model": model,
                     "prompt": prompt,
                     "image": input_images[0],
                     "response_format": "url",
-                    "size": "adaptive",
+                    "size": "2K",
                     "seed": random.randint(1, 9999),
                     "guidance_scale": 5.5,
                     "watermark": False,
@@ -156,10 +157,11 @@ class VolcesProvider(ImageProviderBase):
                         print(f"👇SeedEdit Url: {result}")
 
             else:
+                print(f"gen image model: {model}")
                 result = client.images.generate(
                     model=model,
                     prompt=prompt,
-                    size=kwargs.get("size", f"{width}x{height}"),
+                    size=kwargs.get("size", "2K"),
                     extra_body={"watermark": False},
                 )
 

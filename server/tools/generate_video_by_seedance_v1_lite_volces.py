@@ -8,27 +8,27 @@ from .utils.image_utils import process_input_image
 
 class GenerateVideoBySeedanceV1LiteInputI2VSchema(BaseModel):
     prompt: str = Field(
-        description="Required. The prompt for video generation. Describe what you want to see in the video."
+        description="必填项。视频生成的提示词。描述你想要在视频中看到的内容。"
     )
     resolution: str = Field(
         default="480p",
-        description="Optional. The resolution of the video. Use 480p if not explicitly specified by user. Allowed values: 480p, 720p."
+        description="可选。视频的分辨率。如果用户没有明确指定，使用480p。允许的值：480p、720p。"
     )
     duration: int = Field(
         default=5,
-        description="Optional. The duration of the video in seconds. Use 5 by default. Allowed values: 5, 10."
+        description="可选。视频的时长（秒）。默认使用5秒。允许的值：5、10。"
     )
     aspect_ratio: str = Field(
         default="16:9",
-        description="Optional. The aspect ratio of the video. Allowed values: 1:1, 16:9, 4:3, 21:9"
+        description="可选。视频的宽高比。允许的值：1:1、16:9、4:3、21:9"
     )
     input_images: list[str] | None = Field(
         default=None,
-        description="Optional. Images to use as reference or first frame and last frame. Pass a list of image_id here **in order**, e.g. ['im_jurheut7.png']."
+        description="可选。用作参考、第一帧或最后一帧的图片。按顺序传入图片ID列表，例如：['im_jurheut7.png']。"
     )
     camera_fixed: bool = Field(
         default=True,
-        description="Optional. Whether to keep the camera fixed (no camera movement)."
+        description="可选。是否保持相机固定（无相机移动）。"
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
@@ -57,7 +57,7 @@ class GenerateVideoBySeedanceV1LiteInputT2VSchema(BaseModel):
 
 
 @tool("generate_video_by_seedance_v1_lite_i2v",
-      description="Generate high-quality videos using Seedance V1 Lite model. Supports image-to-video/first-last-frame-video generation.",
+      description="使用Seedance V1 Lite模型生成高质量视频。支持图生视频/首尾帧视频生成。",
       args_schema=GenerateVideoBySeedanceV1LiteInputI2VSchema)
 async def generate_video_by_seedance_v1_lite_i2v(
     prompt: str,
@@ -70,11 +70,11 @@ async def generate_video_by_seedance_v1_lite_i2v(
     camera_fixed: bool = True,
 ) -> str:
     """
-    Generate a video using Seedance V1 model via configured provider
+    通过配置的提供者使用Seedance V1模型生成视频
     """
     if input_images is None:
         raise ValueError(
-            "Input images must be provided for image-to-video generation.")
+            "图生视频生成必须提供输入图片。")
 
     # Process input images if provided (only use the first one)
     processed_input_images = None
@@ -88,19 +88,19 @@ async def generate_video_by_seedance_v1_lite_i2v(
             processed_input_images = [
                 processed_first_image, processed_last_frame]
             print(
-                f"Using input images for video generation: {first_image}, {last_frame}")
+                f"正在使用输入图片进行视频生成：{first_image}，{last_frame}")
         else:
             raise ValueError(
-                f"Failed to process input image: {first_image}. Please check if the image exists and is valid.")
+                f"处理输入图片失败：{first_image}。请检查图片是否存在且有效。")
     else:
         # image-to-video
         processed_image = await process_input_image(input_images[0])
         if processed_image:
             processed_input_images = [processed_image]
-            print(f"Using input image for video generation: {input_images[0]}")
+            print(f"正在使用输入图片进行视频生成：{input_images[0]}")
         else:
             raise ValueError(
-                f"Failed to process input image: {input_images[0]}. Please check if the image exists and is valid.")
+                f"处理输入图片失败：{input_images[0]}。请检查图片是否存在且有效。")
 
     return await generate_video_with_provider(
         prompt=prompt,
@@ -116,7 +116,7 @@ async def generate_video_by_seedance_v1_lite_i2v(
 
 
 @tool("generate_video_by_seedance_v1_lite_t2v",
-      description="Generate high-quality videos using Seedance V1 Lite model. Supports text-to-video generation.",
+      description="使用Seedance V1 Lite模型生成高质量视频。支持文生视频生成。",
       args_schema=GenerateVideoBySeedanceV1LiteInputT2VSchema)
 async def generate_video_by_seedance_v1_lite_t2v(
     prompt: str,
@@ -128,7 +128,7 @@ async def generate_video_by_seedance_v1_lite_t2v(
     camera_fixed: bool = True,
 ) -> str:
     """
-    Generate a video using Seedance V1 model via configured provider
+    通过配置的提供者使用Seedance V1模型生成视频
     """
 
     return await generate_video_with_provider(

@@ -7,16 +7,16 @@ from tools.utils.image_generation_core import generate_image_with_provider
 
 class GenerateImageByDoubaoSeedream3InputSchema(BaseModel):
     prompt: str = Field(
-        description="Required. The prompt for image generation. If you want to edit an image, please describe what you want to edit in the prompt."
+        description="必填项。图像生成的提示词。如果你想要编辑图像，请在提示词中描述你想要编辑的内容。"
     )
     aspect_ratio: str = Field(
-        description="Required. Aspect ratio of the image, only these values are allowed: 1:1, 16:9, 4:3, 3:4, 9:16. Choose the best fitting aspect ratio according to the prompt. Best ratio for posters is 3:4"
+        description="必填项。图像的宽高比，仅允许以下值：1:1、16:9、4:3、3:4、9:16。根据提示词选择最合适的宽高比。海报的最佳比例是3:4。"
     )
     tool_call_id: Annotated[str, InjectedToolCallId]
 
 
 @tool("generate_image_by_doubao_seedream_3_volces",
-      description="Generate an image by Doubao Seedream 3 model using text prompt. This model does NOT support input images for reference or editing. Use this model for high-quality image generation with Doubao's advanced AI. Supports multiple providers with automatic fallback.",
+      description="使用文生图的方式，通过豆包Seedream 3模型生成图像。该模型不支持输入图片作为参考或编辑。使用该模型通过豆包的高级AI生成高质量图像。支持多个提供者并自动降级。",
       args_schema=GenerateImageByDoubaoSeedream3InputSchema)
 async def generate_image_by_doubao_seedream_3_volces(
     prompt: str,
@@ -25,7 +25,7 @@ async def generate_image_by_doubao_seedream_3_volces(
     tool_call_id: Annotated[str, InjectedToolCallId],
 ) -> str:
     """
-    Generate an image using Doubao Seedream 3 model via the provider framework
+    通过提供者框架使用豆包Seedream 3模型生成图像
     """
     ctx = config.get('configurable', {})
     canvas_id = ctx.get('canvas_id', '')

@@ -9,7 +9,7 @@ from services.config_service import config_service
 
 
 class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
-    """Volces Cloud video generation provider implementation"""
+    """Volces云视频生成提供者实现"""
 
     def __init__(self):
         config = config_service.app_config.get('volces', {})
@@ -23,11 +23,11 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
             raise ValueError("Volces URL is not configured")
 
     def _build_api_url(self) -> str:
-        """Build API URL for Volces Cloud"""
+        """构建Volces云的API URL"""
         return f"{self.base_url}/contents/generations/tasks"
 
     def _build_headers(self) -> Dict[str, str]:
-        """Build request headers"""
+        """构建请求头"""
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -37,14 +37,14 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
         self,
         prompt: str,
         model: str | None = None,
-        resolution: str = "480p",
+        resolution: str = "1080p",
         duration: int = 5,
         aspect_ratio: str = "16:9",
         camera_fixed: bool = True,
         input_image_data: Optional[str] | None = None,
         **kwargs: Any
     ) -> Dict[str, Any]:
-        """Build request payload for Volces API"""
+        """构建Volces API的请求参数"""
         # Build command string
         command = (
             f"--resolution {resolution} "
@@ -88,14 +88,14 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
         return payload
 
     async def _poll_task_status(self, task_id: str, headers: Dict[str, str]) -> str:
-        """Poll task status until completion"""
+        """轮询任务状态直到完成"""
         polling_url = f"{self.base_url}/contents/generations/tasks/{task_id}"
         status = "submitted"
 
         async with HttpClient.create_aiohttp() as session:
             while status not in ("succeeded", "failed", "cancelled"):
                 print(
-                    f"🎥 Polling Volces generation {task_id}, current status: {status} ...")
+                    f"🎥 轮询Volces视频生成任务 {task_id}，当前状态：{status} ...")
                 await asyncio.sleep(3)  # Wait 3 seconds between polls
 
                 async with session.get(polling_url, headers=headers) as poll_response:
@@ -109,20 +109,20 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
                             return output
                         else:
                             raise Exception(
-                                "No video URL found in successful response")
+                                "成功响应中未找到视频URL")
                     elif status in ("failed", "cancelled"):
                         detail_error = poll_res.get(
                             "detail", f"Task failed with status: {status}")
                         raise Exception(
-                            f"Volces video generation failed: {detail_error}")
+                                f"Volces视频生成失败：{detail_error}")
 
-        raise Exception(f"Task polling failed with final status: {status}")
+        raise Exception(f"任务轮询失败，最终状态：{status}")
 
     async def generate(
         self,
         prompt: str,
         model: str,
-        resolution: str = "480p",
+        resolution: str = "1080p",
         duration: int = 5,
         aspect_ratio: str = "16:9",
         input_images: Optional[List[str]] = None,
@@ -130,10 +130,10 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
         **kwargs: Any
     ) -> str:
         """
-        Generate video using Volces API
+        使用Volces API生成视频
 
-        Returns:
-            str: Video URL for download
+        返回:
+            str: 用于下载的视频URL
         """
         try:
             api_url = self._build_api_url()
@@ -156,7 +156,7 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
             )
 
             print(
-                f"🎥 Starting Volces video generation")
+                f"🎥 开始Volces视频生成")
 
             # Make API request to create task
             async with HttpClient.create_aiohttp() as session:
@@ -169,27 +169,27 @@ class VolcesVideoProvider(VideoProviderBase, provider_name="volces"):
                         except Exception:
                             error_message = f"HTTP {response.status}"
                         raise Exception(
-                            f"Volces task creation failed: {error_message}")
+                                f"Volces任务创建失败：{error_message}")
 
                     result = await response.json()
                     task_id = result.get("id", None)
 
                 if not task_id:
-                    print("🎥 Failed to create Volces video generation task:", result)
+                    print("🎥 创建Volces视频生成任务失败：", result)
                     raise Exception(
-                        "Volces video generation task creation failed")
+                        "Volces视频生成任务创建失败")
 
                 print(
-                    f"🎥 Volces video generation task created, task_id: {task_id}")
+                f"🎥 Volces视频生成任务已创建，task_id：{task_id}")
 
             # Poll for task completion
             video_url = await self._poll_task_status(task_id, headers)
             print(
-                f"🎥 Volces video generation completed, video URL: {video_url}")
+                f"🎥 Volces视频生成完成，视频URL：{video_url}")
 
             return video_url
 
         except Exception as e:
-            print(f"🎥 Error generating video with Volces: {str(e)}")
+            print(f"🎥 Volces视频生成错误：{str(e)}")
             traceback.print_exc()
             raise e

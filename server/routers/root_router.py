@@ -98,6 +98,7 @@ async def get_models() -> list[ModelInfo]:
 async def list_tools() -> list[ToolInfoJson]:
     config = config_service.get_config()
     res: list[ToolInfoJson] = []
+    # 添加内置工具
     for tool_id, tool_info in tool_service.tools.items():
         if tool_info.get('provider') == 'system':
             continue
@@ -111,22 +112,21 @@ async def list_tools() -> list[ToolInfoJson]:
             'type': tool_info.get('type', ''),
             'display_name': tool_info.get('display_name', ''),
         })
-
-    # Handle ComfyUI models separately
-    # comfyui_config = config.get('comfyui', {})
-    # comfyui_url = comfyui_config.get('url', '').strip()
-    # comfyui_config_models = comfyui_config.get('models', {})
-    # if comfyui_url:
-    #     comfyui_models = await get_comfyui_model_list(comfyui_url)
-    #     for comfyui_model in comfyui_models:
-    #         if comfyui_model in comfyui_config_models:
-    #             res.append({
-    #                 'provider': 'comfyui',
-    #                 'model': comfyui_model,
-    #                 'url': comfyui_url,
-    #                 'type': 'image'
-    #             })
-
+    # 添加自定义模型
+    for provider_name, provider_config in config.items():
+        if 'models' in provider_config:
+            for model_name, model_config in provider_config['models'].items():
+                if model_config.get('is_custom'):
+                    # 检查provider是否有api_key（comfyui除外）
+                    provider_api_key = provider_config.get('api_key', '').strip()
+                    if provider_name != 'comfyui' and not provider_api_key:
+                        continue
+                    res.append({
+                        'id': f"{provider_name}_{model_name}",
+                        'provider': provider_name,
+                        'type': model_config.get('type', 'text'),
+                        'display_name': model_name,
+                    })
     return res
 
 
